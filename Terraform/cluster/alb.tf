@@ -9,11 +9,18 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]  # 외부에서 접근 가능
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    security_groups = [module.eks.cluster_security_group_id]
   }
 
   tags = merge(local.tags, {

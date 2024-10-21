@@ -4,7 +4,8 @@ module "eks" {
     
   cluster_name                   = var.cluster_name
   cluster_version                = var.cluster_version
-  cluster_endpoint_public_access = true
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = false
     
   cluster_addons = {
     vpc-cni = {
@@ -29,6 +30,18 @@ module "eks" {
     
   create_cluster_security_group = false
   create_node_security_group    = false
+
+  # EKS 클러스터 보안 그룹 규칙 추가
+  cluster_security_group_additional_rules = {
+    ingress_allow_access_from_alb = {
+      description = "Allow access from ALB"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "ingress"
+      source_security_group_id = aws_security_group.alb_sg.id
+    }
+  }
     
   eks_managed_node_groups = {
     default = {
