@@ -1,0 +1,7 @@
+services:
+  db:
+    image: eddykim3396/ktb-10-db
+    container_name: munggae-db-test
+    restart: always
+    ports:
+      - '3306:3306'
