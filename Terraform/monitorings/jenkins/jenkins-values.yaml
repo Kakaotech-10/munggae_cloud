@@ -402,6 +402,7 @@ controller:
     - workflow-aggregator:600.vb_57cdd26fdd7
     - git:5.5.2
     - configuration-as-code:1850.va_a_8c31d3158b_
+    - GradleVersion:2.13.1
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -1199,12 +1200,19 @@ agent:
 # Inherits all values from `agent` so you only need to specify values which differ
 # -- Configure additional
 additionalAgents:
- node:
-   podName: node
-   customJenkinsLabels: node
-   image:
-     repository: eddykim3396/jenkins-node-agent
-     tag: latest
+  node:
+    podName: node
+    customJenkinsLabels: node
+    image:
+      repository: eddykim3396/jenkins-node-agent
+      tag: latest
+
+  java-docker:
+    podName: java-docker
+    customJenkinsLabels: java-docker
+    image:
+      repository: eddykim3396/jenkins-java-agent
+      tag: latest
 #  maven:
 #    podName: maven
 #    customJenkinsLabels: maven
