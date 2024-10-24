@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS member (
     course VARCHAR(50) NOT NULL,
     member_name VARCHAR(50) NOT NULL,
     member_name_english VARCHAR(50) NOT NULL,
-    email VARCHAR(255),
+    kakao_id BIGINT NOT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
 );
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS image (
     updated_at DATETIME NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS postimage (
+CREATE TABLE IF NOT EXISTS post_image (
     image_id BIGINT NOT NULL,
     post_id BIGINT NOT NULL,
     PRIMARY KEY (image_id, post_id),
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS postimage (
     FOREIGN KEY (post_id) REFERENCES post(post_id)
 );
 
-CREATE TABLE IF NOT EXISTS memberimage (
+CREATE TABLE IF NOT EXISTS member_image (
     image_id BIGINT NOT NULL,
     member_id BIGINT NOT NULL,
     PRIMARY KEY (image_id, member_id),
