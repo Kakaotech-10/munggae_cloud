@@ -216,7 +216,7 @@ controller:
   # For minikube, set this to NodePort, elsewhere uses LoadBalancer
   # Use ClusterIP if your setup includes ingress controller
   # -- k8s service type
-  serviceType: ClusterIP
+  serviceType: LoadBalancer
 
   # -- k8s service clusterIP. Only used if serviceType is ClusterIP
   clusterIp:
@@ -548,6 +548,11 @@ controller:
   #   image: "alpine:3"
   #   imagePullPolicy: Always
   #   command: [ "uname", "-a" ]
+
+  initContainers:
+    - name: install-node
+      image: ubuntu:latest
+      command: ['sh', '-c', 'apt-get update && apt-get install -y nodejs npm']
 
   sidecars:
     configAutoReload:
@@ -924,7 +929,7 @@ agent:
 
   # For connecting to the Jenkins controller
   # -- Overrides the Kubernetes Jenkins URL
-  jenkinsUrl:
+  jenkinsUrl: 'http://a035067e1b62148499b1a3267efaf0fb-252249916.ap-northeast-2.elb.amazonaws.com:8080'
 
   # connects to the specified host and port, instead of connecting directly to the Jenkins controller
   # -- Overrides the Kubernetes Jenkins tunnel
@@ -944,7 +949,7 @@ agent:
   # -- Seconds to wait for pod to be running
   waitForPodSec: 600
   # -- Namespace in which the Kubernetes agents should be launched
-  namespace:
+  namespace: 'jenkins'
   # -- Custom Pod labels (an object with `label-key: label-value` pairs)
   podLabels: {}
   # -- Custom registry used to pull the agent jnlp image from
@@ -1193,7 +1198,13 @@ agent:
 
 # Inherits all values from `agent` so you only need to specify values which differ
 # -- Configure additional
-additionalAgents: {}
+additionalAgents:
+ node:
+   podName: node
+   customJenkinsLabels: node
+   image:
+     repository: eddykim3396/jenkins-node-agent
+     tag: latest
 #  maven:
 #    podName: maven
 #    customJenkinsLabels: maven
