@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS post (
 );
 
 CREATE TABLE IF NOT EXISTS comment (
-    comment_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    comment_id BIGINT NOT NULL AUTO_INCREMENT,
     post_id BIGINT NOT NULL,
     member_id BIGINT NOT NULL,
     parent_comment_id BIGINT,
@@ -58,10 +58,13 @@ CREATE TABLE IF NOT EXISTS comment (
     depth INT NOT NULL,
     is_deleted BOOLEAN NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE,
-    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (comment_id),
+    FOREIGN KEY (post_id) REFERENCES post(post_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id)
 );
+
 
 CREATE TABLE IF NOT EXISTS image (
     image_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
