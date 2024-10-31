@@ -116,8 +116,8 @@ controller:
       cpu: '50m'
       memory: '256Mi'
     limits:
-      cpu: '2000m'
-      memory: '4096Mi'
+      cpu: '1024m'
+      memory: '2048Mi'
 
   # Share process namespace to allow sidecar containers to interact with processes in other containers in the same pod
   shareProcessNamespace: false
@@ -262,7 +262,9 @@ controller:
         # -- Set the Pod's HTTP port to use for the startup probe
         port: http
       # -- Set the time interval between two startup probes executions in seconds
+      initialDelaySeconds: 60
       periodSeconds: 10
+      failureThreshold: 15
       # -- Set the timeout for the startup probe in seconds
       timeoutSeconds: 5
 
@@ -402,7 +404,7 @@ controller:
     - workflow-aggregator:600.vb_57cdd26fdd7
     - git:5.5.2
     - configuration-as-code:1850.va_a_8c31d3158b_
-    - GradleVersion:2.13.1
+    # - GradleVersion:2.13.1
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -983,11 +985,11 @@ agent:
   resources:
     requests:
       cpu: '512m'
-      memory: '512Mi'
+      memory: '1024Mi'
       # ephemeralStorage:
     limits:
       cpu: '512m'
-      memory: '512Mi'
+      memory: '1024Mi'
       # ephemeralStorage:
   livenessProbe: {}
   #    execArgs: "cat /tmp/healthy"
@@ -1213,6 +1215,29 @@ additionalAgents:
     image:
       repository: eddykim3396/jenkins-java-agent
       tag: latest
+
+  dind:
+    podName: dind-agent
+    customJenkinsLabels: dind-agent
+    image:
+      repository: seongtaekkim/dind-client-jenkins-agent
+      tag: latest
+    envVars:
+      - name: DOCKER_HOST
+        value: "tcp://localhost:2375"
+    alwaysPullImage: true
+    yamlTemplate:  |-  
+      spec: 
+        containers:
+          - name: dind-daemon 
+            image: docker:24.0.0-rc.1-dind
+            securityContext: 
+              privileged: true
+            env: 
+              - name: DOCKER_TLS_VERIFY
+                value: ""
+              - name: DOCKER_TLS_CERTDIR
+                value: ""
 #  maven:
 #    podName: maven
 #    customJenkinsLabels: maven
@@ -1330,7 +1355,7 @@ rbac:
   # -- Whether RBAC resources are created
   create: true
   # -- Whether the Jenkins service account should be able to read Kubernetes secrets
-  readSecrets: false
+  readSecrets: true
   # -- Whether the Jenkins service account should be able to use the OpenShift "nonroot" Security Context Constraints
   useOpenShiftNonRootSCC: false
 

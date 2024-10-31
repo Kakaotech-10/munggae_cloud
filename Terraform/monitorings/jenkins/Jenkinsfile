@@ -1,0 +1,45 @@
+pipeline {
+    agent {
+        kubernetes {
+            label 'kaniko'
+            defaultContainer 'kaniko'
+            yaml """
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+                - name: kaniko
+                  image: gcr.io/kaniko-project/executor:latest
+                  args: ["--dockerfile=Dockerfile.spring", "--context=dir://workspace", "--destination=\${SPRING_IMAGE_REPO}:latest"]
+                  env:
+                    - name: DOCKER_CONFIG
+                      value: /kaniko/.docker/
+                  volumeMounts:
+                    - name: docker-config
+                      mountPath: /kaniko/.docker/
+              volumes:
+                - name: docker-config
+                  secret:
+                    secretName: dockerhub-credentials
+            """
+        }
+    }
+    environment {
+        SPRING_IMAGE_REPO = 'ella00/munggae-be-spring'
+        FASTAPI_IMAGE_REPO = 'ella00/munggae-be-fastapi'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build Spring Docker Image') {
+            steps {
+                script {
+                    sh "/kaniko/executor --dockerfile=Dockerfile.spring --context=dir://workspace --destination=$SPRING_IMAGE_REPO:latest"
+                }
+            }
+        }
+    }
+}
