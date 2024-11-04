@@ -116,8 +116,8 @@ controller:
       cpu: '50m'
       memory: '256Mi'
     limits:
-      cpu: '1024m'
-      memory: '2048Mi'
+      cpu: '512m'
+      memory: '1024Mi'
 
   # Share process namespace to allow sidecar containers to interact with processes in other containers in the same pod
   shareProcessNamespace: false
