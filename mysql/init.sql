@@ -4,7 +4,6 @@ USE munggaedatabase;
 
 CREATE TABLE IF NOT EXISTS member (
     member_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    community_id BIGINT NOT NULL,
     role VARCHAR(50) NOT NULL,
     course VARCHAR(50) NOT NULL,
     member_name VARCHAR(50) NOT NULL,
@@ -39,13 +38,11 @@ CREATE TABLE IF NOT EXISTS member_channel (
 
 CREATE TABLE IF NOT EXISTS post (
     post_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    channel_id BIGINT NOT NULL,
     member_id BIGINT NOT NULL,
     post_title VARCHAR(255) NOT NULL,
     post_content TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
@@ -60,18 +57,20 @@ CREATE TABLE IF NOT EXISTS comment (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (comment_id),
-    FOREIGN KEY (post_id) REFERENCES post(post_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id)
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS image (
     image_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     original_name VARCHAR(255) NOT NULL,
     stored_name VARCHAR(255) NOT NULL,
+    s3_image_path VARCHAR(1024) NOT NULL,  -- 추가된 필드
+    DTYPE VARCHAR(31) NOT NULL,            -- 추가된 필드
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (stored_name)
 );
 
 CREATE TABLE IF NOT EXISTS post_image (
